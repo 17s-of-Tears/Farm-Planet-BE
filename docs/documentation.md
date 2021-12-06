@@ -67,7 +67,60 @@
 // request
 { "url": "/api/v1/user/me", "data": {} }
 // response
-{ "name": "temp", "date": "2021-11-29T06:54:51.000Z", "profileImg": null }
+{
+   "id": 5,
+   "name": "temp",
+   "date": "2021-11-29T06:54:51.000Z",
+   "profileImg": null,
+   "farm": {
+      "subscribeId": 1,
+      "name": "진수는 돈이 많수",
+      "yard": 350,
+      "imageUrl": "img/farm/3951abafa8b54c6db010dcc7a057a480.png",
+      "address": "압구정 4번출구 날 기다리는 그녀 이름 경은이",
+      "locationX": 37.3595,
+      "locationY": 127.105,
+      "plants": [ { "id": 1, "plantId": 1, "name": "고구마" }, { "id": 3, "plantId": 2, "name": "사과" } ]
+   }
+}
+```
+
+## Subscribe API
+
+### subscribe
+
+- POST /api/v1/subscribe
+
+<table>
+<tr><th colspan="2" rowspan="1">허용 타입</th><td colspan="3">application/json</td></tr>
+<tr><th>parameter</th><th>type</th><th>description</th><th>default</th><th>optional</th>
+<tr><td>farmId</td><td>Number</td><td>밭 번호</td><td>❌</td><td>❌</td></tr>
+</table>
+
+
+```js
+// request
+{ "url": "/api/v1/subscribe", "data": { "farmId": 2 } }
+// response
+{ "subscribeId": 2, "complete": true }
+```
+
+### subscribe-plant
+
+- POST /api/v1/subscribe/plant
+
+<table>
+<tr><th colspan="2" rowspan="1">허용 타입</th><td colspan="3">application/json</td></tr>
+<tr><th>parameter</th><th>type</th><th>description</th><th>default</th><th>optional</th>
+<tr><td>plantId</td><td>Number</td><td>작물 번호</td><td>❌</td><td>❌</td></tr>
+</table>
+
+
+```js
+// request
+{ "url": "/api/v1/subscribe/plant", "data": { "plantId": 1 } }
+// response
+{ "subscribePlantId": 4, "complete": true }
 ```
 
 ## Sign API

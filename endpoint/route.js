@@ -6,4 +6,5 @@ module.exports = (app) => {
   app.child('/sign', require('./sign'));
   app.child('/user/me', require('./user'));
   app.child('/category', require('./category'));
+  app.child('/subscribe', require('./subscribe'));
 }

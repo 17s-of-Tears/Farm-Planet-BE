@@ -7,25 +7,25 @@ module.exports = (app, CategoryModel) => {
     }
 
     async create(res) {
-      this.checkParameters(this.name, this.description, this.categoryId);
-      await this.dao.serialize(async db => {
-        await this.checkAuthorized(db);
-        const result = await db.run('insert into plant(name, description, categoryId) values (?, ?, ?)', [
-          this.name, this.description, this.categoryId
-        ]);
-        if(this.file.size()) {
-          await this.file.add(async file => {
+      await this.file.serialize(async files => {
+        this.checkParameters(this.name, this.description, this.categoryId);
+        await this.dao.serialize(async db => {
+          await this.checkAuthorized(db);
+          if(!files.size()) {
+            throw new PlantModel.Error400('FILE_NOT_EXISTS');
+          }
+          const result = await db.run('insert into plant(name, description, categoryId) values (?, ?, ?)', [
+            this.name, this.description, this.categoryId
+          ]);
+          for(const file of files) {
             await db.run('update plant set plant.imageUrl=? where plant.id=?', [
               `img/plant/${file.uuid}`, result.lastID
             ]);
+          }
+          res.status(201).json({
+            id: result.lastID,
           });
-        }
-        res.status(201).json({
-          id: result.lastID,
         });
-      }).catch(err => {
-        this.file.withdraw && this.file.withdraw();
-        throw err;
       });
     }
 
