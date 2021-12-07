@@ -32,7 +32,7 @@ module.exports = (app, CategoryModel) => {
     async read(res) {
       await this.dao.serialize(async db => {
         await this.checkAuthorized(db);
-        const plants = await db.get('select * from plant limit ?,?', [
+        const plants = await db.get('select plant.*, plantCategory.name as categoryName from plant left join plantCategory on plant.categoryId=plantCategory.id limit ?,?', [
           (this.page - 1) * this.pageSize, this.pageSize
         ]);
         const meta = await db.get('select count(*) as length from plant');
