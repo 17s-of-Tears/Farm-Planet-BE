@@ -8,7 +8,7 @@ module.exports = (app, SubscribeModel) => {
     async read(res) {
       await this.dao.serialize(async db => {
         await this.checkAuthorized(db);
-        const subscribe = await db.get('select subscribe.id, farm.id as farmId, farm.name as farmName, user.name as userName, subscribe.createdAt, count(subscribePlant.id) as plants from subscribe left join user on subscribe.userId=user.id left join farm on subscribe.farmId=farm.id left join subscribePlant on subscribe.id=subscribePlant.subscribeId where subscribe.id=? order by subscribe.id desc', [
+        const subscribe = await db.get('select subscribe.id, farm.id as farmId, farm.name as farmName, user.name as userName, subscribe.createdAt, farm.imageUrl, count(subscribePlant.id) as plants from subscribe left join user on subscribe.userId=user.id left join farm on subscribe.farmId=farm.id left join subscribePlant on subscribe.id=subscribePlant.subscribeId where subscribe.id=? order by subscribe.id desc', [
           this.subscribeId
         ]);
         if(!subscribe[0]) {

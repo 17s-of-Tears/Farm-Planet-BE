@@ -1,5 +1,10 @@
 module.exports = (app, Model) => {
   class UserModel extends Model {
+    constructor(req) {
+      super(req);
+      this.name = req.body?.name;
+    }
+
     async read(res) {
       await this.dao.serialize(async db => {
         await this.checkAuthorized(db);
@@ -26,7 +31,18 @@ module.exports = (app, Model) => {
         });
       });
     }
+    async update(res) {
+      this.checkParameters(this.name);
+      await this.dao.serialize(async db => {
+        await this.checkAuthorized(db);
+        await db.run('update user set user.name=? where user.id=? limit 1', [
+          this.name, this.requestUserID
+        ]);
+        res.json({ complete: true });
+      });
+    }
   }
   app(UserModel);
   app.read();
+  app.update();
 };

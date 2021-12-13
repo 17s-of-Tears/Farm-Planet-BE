@@ -6,6 +6,7 @@ module.exports = (app, SignModel) => {
     }
 
     async create(res) {
+      this.checkParameters(this.name, this.accountID, this.rawPassword);
       await this.dao.serialize(async db => {
         const users = await db.get('select * from user where user.accountID=? and user.accountType=?', [
           this.accountID, SignUpModel.ACCOUNT_TYPE_LOCAL

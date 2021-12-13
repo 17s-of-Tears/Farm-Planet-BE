@@ -52,13 +52,13 @@ module.exports = (app, SubscribePlantModel) => {
     async read(res) {
       this.checkParameters(this.subscribeId, this.subscribePlantId);
       await this.dao.serialize(async db => {
-        const infos = await db.get('select plant.name, plant.description from subscribe left join subscribePlant on subscribe.id=subscribePlant.subscribeId left join plant on subscribePlant.plantId=plant.id where subscribe.id=? and subscribePlant.id=?', [
+        const infos = await db.get('select plant.name, plant.description, plant.imageUrl from subscribe left join subscribePlant on subscribe.id=subscribePlant.subscribeId left join plant on subscribePlant.plantId=plant.id where subscribe.id=? and subscribePlant.id=?', [
           this.subscribeId, this.subscribePlantId
         ]);
         if(!infos[0]) {
           throw new SubscribePlantDetailModel.Error404();
         }
-        const states = await db.get('select subscribePlantState.imageUrl, subscribePlantState.createdAt from subscribe left join subscribePlant on subscribe.id=subscribePlant.subscribeId left join subscribePlantState on subscribePlant.id=subscribePlantState.subscribePlantId where subscribe.id=? and subscribePlant.id=?', [
+        const states = await db.get('select subscribePlantState.imageUrl, subscribePlantState.createdAt from subscribe left join subscribePlant on subscribe.id=subscribePlant.subscribeId left join subscribePlantState on subscribePlant.id=subscribePlantState.subscribePlantId where subscribe.id=? and subscribePlant.id=? order by subscribePlantState.id desc', [
           this.subscribeId, this.subscribePlantId
         ]);
         res.json({
@@ -93,4 +93,5 @@ module.exports = (app, SubscribePlantModel) => {
   app(SubscribePlantDetailModel);
   app.create();
   app.read();
+  app.update();
 }

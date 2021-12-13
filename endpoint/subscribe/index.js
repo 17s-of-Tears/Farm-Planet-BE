@@ -6,7 +6,7 @@ module.exports = (app, Model) => {
     }
 
     async checkSubscribed(db) {
-      const subscribe = await db.get('select * from subscribe where subscribe.userId=? and subscribe.subscribed=1', [
+      const subscribe = await db.get('select subscribe.id, subscribe.farmId, subscribe.createdAt from subscribe where subscribe.userId=? and subscribe.subscribed=1', [
         this.requestUserID
       ]);
       return !!subscribe.length;
@@ -46,6 +46,19 @@ module.exports = (app, Model) => {
           subscribeId: result.lastID,
           complete: true,
         });
+      });
+    }
+
+    async read(res) {
+      await this.dao.serialize(async db => {
+        await this.checkAuthorized(db);
+        const subscribe = await db.get('select * from subscribe where subscribe.userId=? and subscribe.subscribed=1', [
+          this.requestUserID
+        ]);
+        if(!subscribe[0]) {
+          throw new SubscribeModel.Error404();
+        }
+        res.json(subscribe[0]);
       });
     }
   }

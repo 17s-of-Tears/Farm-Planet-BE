@@ -35,7 +35,7 @@ module.exports = (app, AdminModel) => {
 
     async read(res) {
       await this.dao.serialize(async db => {
-        //await this.checkAuthorized(db);
+        await this.checkAuthorized(db);
         const farms = await db.get('select * from farm limit ?,?', [
           (this.page - 1) * this.pageSize, this.pageSize
         ]);

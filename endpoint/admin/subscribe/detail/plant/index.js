@@ -4,13 +4,10 @@ module.exports = (app, SubscribeDetailModel) => {
       this.checkParameters(this.subscribeId);
       await this.dao.serialize(async db => {
         await this.checkAuthorized(db);
-        const plants = await db.get('select subscribePlant.id, plant.name from subscribePlant left join plant on subscribePlant.plantId=plant.id where subscribePlant.subscribeId=?', [
+        const plants = await db.get('select subscribePlant.id, plant.name, plant.imageUrl from subscribePlant left join plant on subscribePlant.plantId=plant.id where subscribePlant.subscribeId=?', [
           this.subscribeId,
         ]);
-        if(!plants[0]) {
-          throw new SubscribePlantModel.Error404();
-        }
-        res.json(plants[0]);
+        res.json(plants);
       });
     }
   }
