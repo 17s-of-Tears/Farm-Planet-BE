@@ -36,11 +36,6 @@ create table user (
 
 
 
-create table subscribe(
-  id
-  date
-);
-
 
 create table farm(
   id int unsigned not null AUTO_INCREMENT,
@@ -53,27 +48,8 @@ create table farm(
   primary key (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
-create table farmWood (
-  id,
-  name,
-  imageUrl
-);
-
-create table farmPlant ()
 
 
-
-create table wood (
-  id
-  name
-  image
-
-);
-
-create table plant
-  id
-  name
-  image
 
 
 
@@ -115,11 +91,7 @@ insert into admin (name, accountID, password, fresh) values (
   'b6797c9f-67ea-4e10-8c4e-304da1037f06'
 );
 
-create table farmBanner (
-  id int unsigned not null AUTO_INCREMENT,
-  imageUrl varchar(2083) not null,
-  primary key (id)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
 
 create table plantCategory (
   id int unsigned not null AUTO_INCREMENT,
@@ -147,17 +119,23 @@ create table banner (
   modifiedAt timestamp not null default current_timestamp on update current_timestamp,
   imageUrl varchar(2083) null,
   primary key (id)
-);
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 create table subscribe (
   id int unsigned not null AUTO_INCREMENT,
-  farmId int unsigned null,
   userId int unsigned null,
   createdAt timestamp not null default current_timestamp,
   modifiedAt timestamp not null default current_timestamp on update current_timestamp,
   expiredAt timestamp null,
+  level int unsigned not null default 1,
   subscribed boolean not null default 0,
-  foreign key (farmId) references farm(id),
+  pending boolean not null default 0,
+  name varchar(255) not null,
+  yard int unsigned null,
+  address varchar(255) null,
+  locationX double null,
+  locationY double null,
+  imageUrl varchar(2083) null,
   foreign key (userId) references user(id),
   primary key (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
@@ -168,12 +146,12 @@ create table subscribePlant (
   plantId int unsigned null,
   createdAt timestamp not null default current_timestamp,
   modifiedAt timestamp not null default current_timestamp on update current_timestamp,
+  expired boolean not null default 0,
+  expiredAt timestamp null,
   foreign key (subscribeId) references subscribe(id) on delete cascade,
   foreign key (plantId) references plant(id),
   primary key (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
-alter table subscribePlant add column expired boolean not null default 0;
-alter table subscribePlant add column expiredAt timestamp null;
 
 create table subscribePlantState (
   id int unsigned not null AUTO_INCREMENT,

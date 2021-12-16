@@ -33,7 +33,6 @@ module.exports = (app, Model) => {
   app.child('/account', require('./account'));
   app.child('/board', require('./board'));
   app.child('/category', require('./category'));
-  app.child('/farm', require('./farm'));
   app.child('/sign', require('./sign'));
   app.child('/subscribe', require('./subscribe'));
   app.child('/user', require('./user'));

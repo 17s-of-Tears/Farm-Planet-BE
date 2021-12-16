@@ -33,14 +33,17 @@ app.addErrorType(Model.Error404, {
   status: 404,
   message: 'NOT_FOUND',
 });
-//app.listen(49000);
 
-const proto = app.getProto();
-const https = require('https');
-const fs = require('fs');
-const credentials = {
-  key: fs.readFileSync(process.env.SSL_KEY, 'utf8'),
-  cert: fs.readFileSync(process.env.SSL_CERT, 'utf8'),
-};
-const server = https.createServer(credentials, proto);
-server.listen(49000);
+if(process.env.HTTPS==='1') {
+  const proto = app.getProto();
+  const https = require('https');
+  const fs = require('fs');
+  const credentials = {
+    key: fs.readFileSync(process.env.SSL_KEY, 'utf8'),
+    cert: fs.readFileSync(process.env.SSL_CERT, 'utf8'),
+  };
+  const server = https.createServer(credentials, proto);
+  server.listen(process.env.PORT ? process.env.PORT - 0 : 49000);
+} else {
+  app.listen(process.env.PORT ? process.env.PORT - 0 : 49000);
+}

@@ -2,11 +2,12 @@ module.exports = (app, Model) => {
   class SubscribeModel extends Model {
     constructor(req) {
       super(req);
-      this.farmId = req.body?.farmId - 0;
+      this.farmName = req.body?.farmName;
+      this.level = req.body?.level - 0;
     }
 
     async checkSubscribed(db) {
-      const subscribe = await db.get('select subscribe.id, subscribe.farmId, subscribe.createdAt from subscribe where subscribe.userId=? and subscribe.subscribed=1', [
+      const subscribe = await db.get('select subscribe.id, subscribe.createdAt from subscribe where subscribe.userId=? and subscribe.subscribed=1', [
         this.requestUserID
       ]);
       return !!subscribe.length;
@@ -14,33 +15,19 @@ module.exports = (app, Model) => {
 
     async create(res) {
       /* 구독 조건
-          1. 구독중인 밭이 아님
-          2. 등록된 밭임
-          3. 내가 구독중인 밭이 없음
+          1. 내가 구독중인 것이 없음(subscribed=1이 하나도 있어서는 안됨)
       */
-      this.checkParameters(this.farmId);
+      this.checkParameters(this.farmName, this.level);
       await this.dao.serialize(async db => {
         await this.checkAuthorized(db);
 
         if(await this.checkSubscribed(db)) {
-          // 구독조건 3
-          throw new SubscribeModel.Error400('SUBSCRIBE_EXISTS');
-        }
-
-        const farms = await db.get('select farm.id, sum(subscribe.subscribed) as subscribed from farm left join subscribe on farm.id=subscribe.farmId where farm.id=? group by farm.id', [
-          this.farmId
-        ]);
-        if(!farms[0]) {
-          // 구독조건 2
-          throw new SubscribeModel.Error400('FARM_NOT_EXISTS');
-        }
-        if(farms[0].subscribed > 0) {
           // 구독조건 1
           throw new SubscribeModel.Error400('SUBSCRIBE_EXISTS');
         }
 
-        const result = await db.run('insert into subscribe(farmId, userId, subscribed) values (?, ?, 1)', [
-          this.farmId, this.requestUserID
+        const result = await db.run('insert into subscribe(name, level, userId, subscribed, pending) values (?, ?, ?, 1, 1)', [
+          this.farmName, this.level, this.requestUserID
         ]);
         res.status(201).json({
           subscribeId: result.lastID,
@@ -64,5 +51,6 @@ module.exports = (app, Model) => {
   }
   app(SubscribeModel);
   app.create();
+  app.read();
   app.child('/plant', require('./plant'));
 };
