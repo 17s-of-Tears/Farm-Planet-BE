@@ -3,7 +3,7 @@ module.exports = (app, AdminModel) => {
     async read(res) {
       await this.dao.serialize(async db => {
         await this.checkAuthorized(db);
-        const users = await db.get('select subscribe.id, subscribe.name as farmName, user.name as userName, subscribe.createdAt, subscribe.expiredAt, subscribe.subscribed, subscribe.pending, subscribe.level, count(subscribePlant.id) as plants from subscribe left join user on subscribe.userId=user.id left join subscribePlant on subscribe.id=subscribePlant.subscribeId order by subscribe.pending desc, subscribe.subscribed desc, subscribe.id desc limit ?,?', [
+        const users = await db.get('select subscribe.id, subscribe.name as farmName, user.name as userName, subscribe.createdAt, subscribe.expiredAt, subscribe.subscribed, subscribe.pending, subscribe.level, count(subscribePlant.id) as plants from subscribe left join user on subscribe.userId=user.id left join subscribePlant on subscribe.id=subscribePlant.subscribeId group by subscribe.id order by subscribe.pending desc, subscribe.subscribed desc, subscribe.id desc limit ?,?', [
           (this.page - 1) * this.pageSize, this.pageSize
         ]);
         const meta = await db.get('select count(*) as length from subscribe where subscribe.subscribed=1');
